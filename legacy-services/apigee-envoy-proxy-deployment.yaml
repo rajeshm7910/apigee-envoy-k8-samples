@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apigee-envoy-proxy-deployment
+spec:
+  selector:
+    matchLabels:
+      app: apigee-envoy-proxy
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: apigee-envoy-proxy
+    spec:
+      containers:
+      - name: apigee-envoy-proxy
+        image: envoyproxy/envoy:v1.23-latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+         - mountPath: /etc/envoy/envoy.yaml
+           name: envoy-config
+           subPath: envoy.yaml
+      volumes:
+      - name: envoy-config
+        configMap:
+          name : apigee-envoy-config
+          items:
+          - key:  envoy-config.yaml
+            path: envoy.yaml

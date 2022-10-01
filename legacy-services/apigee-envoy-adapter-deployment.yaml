@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apigee-envoy-adapter-deployment
+spec:
+  selector:
+    matchLabels:
+      app: apigee-envoy-adapter
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: apigee-envoy-adapter
+    spec:
+      containers:
+      - name: apigee-envoy-adapter
+        image: google/apigee-envoy-adapter:v2.0.0
+        ports:
+        - containerPort: 80
+        volumeMounts:
+         - mountPath: /config.yaml
+           name: apigee-remote-service-envoy-config
+           subPath: config.yaml
+      volumes:
+      - name: apigee-remote-service-envoy-config
+        configMap:
+          name : apigee-remote-service-envoy
+          items:
+          - key:  config.yaml
+            path: config.yaml
